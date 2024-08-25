@@ -1,0 +1,41 @@
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+# Example user details
+USER_ID = "john_doe_17091999"
+EMAIL = "john@xyz.com"
+ROLL_NUMBER = "ABCD123"
+
+@app.route('/bfhl', methods=['POST'])
+def post_endpoint():
+    try:
+        data = request.json.get('data', [])
+        numbers = [item for item in data if item.isdigit()]
+        alphabets = [item for item in data if item.isalpha()]
+        lowest_lowercase = [ch for ch in alphabets if ch.islower()]
+        highest_lowercase = max(lowest_lowercase, default="", key=lambda ch: ord(ch))
+
+        response = {
+            "is_success": True,
+            "user_id": USER_ID,
+            "email": EMAIL,
+            "roll_number": ROLL_NUMBER,
+            "numbers": numbers,
+            "alphabets": alphabets,
+            "highest_lowercase_alphabet": [highest_lowercase] if highest_lowercase else []
+        }
+
+        return jsonify(response), 200
+    except Exception as e:
+        return jsonify({"is_success": False, "error": str(e)}), 500
+
+@app.route('/bfhl', methods=['GET'])
+def get_endpoint():
+    response = {
+        "operation_code": 1
+    }
+    return jsonify(response), 200
+
+if __name__ == '__main__':
+    app.run(debug=True)
